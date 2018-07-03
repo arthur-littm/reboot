@@ -33,6 +33,25 @@
 # 5. change the value of `bought` to `true` for that gift
 
 # -------- STEP 4 --------
+# gem install nokogiri
+
+# 1. add `idea` option program
+# 2. ask the user what to search
+# 3. open the url
+# 4. search the document with given selectors
+# 5. display list of results and store results in an array
+# 6. ask which index to add
+# 7. find the results in the array and add it to gift_list
+
+
+
+
+
+
+
+
+
+
 
 
 

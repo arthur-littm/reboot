@@ -1,4 +1,21 @@
+require 'open-uri'
+require 'nokogiri'
 require 'csv'
+
+def scrape(keyword)
+  # 1. We get the HTML page content thanks to open-uri
+  html_content = open("https://www.etsy.com/search?q=#{keyword}").read
+  # 2. We build a Nokogiri document from this file
+  doc = Nokogiri::HTML(html_content)
+
+  results = []
+  # 3. We search for the correct elements containing the items' title in our HTML doc
+  doc.search('.block-grid-xs-2 .v2-listing-card__info .text-body').first(5).each do |element|
+    # 4. For each item found, we extract its title and print it
+    results << element.text.strip
+  end
+  return results
+end
 
 # 1. add `mark` as an option in the menu
 # 2. list all the gifts from `gift_list` and modify the display
@@ -26,7 +43,7 @@ puts "> Welcome to your Christmas gift list"
 answer = ""
 
 while answer != "quit"
-  puts "> Which action [list|add|delete|mark|quit]?"
+  puts "> Which action [list|add|delete|mark|idea|quit]?"
   answer = gets.chomp
   case answer
   when "list"
@@ -36,6 +53,23 @@ while answer != "quit"
       puts "#{index + 1} [#{marked}] - #{item[:name]}"
     end
 
+  when "idea"
+
+    puts "What are you searching on Etsy?"
+    article = gets.chomp
+
+    results = scrape(article)
+
+    results.each_with_index do |gift, index|
+      puts "#{index + 1} - #{gift}"
+      puts "---------"
+    end
+
+    puts "pick one (index)?"
+    index_to_add = gets.chomp.to_i - 1
+
+    add_gift = results[index_to_add]
+    gift_list << {name: add_gift, bought: false}
 
   when "add"
     puts "New gift item"
@@ -55,6 +89,7 @@ while answer != "quit"
     puts "#{name} was deleted from the list"
 
   when "mark"
+
     puts "Gift List"
     gift_list.each_with_index do |item, index|
       marked = item[:bought] ? 'X' : ' '
@@ -70,6 +105,7 @@ while answer != "quit"
     end
 
   when "quit"
+
     puts "Goodbye 😃"
 
     CSV.open(filepath, 'wb') do |csv|
@@ -77,7 +113,6 @@ while answer != "quit"
         csv << [ gift[:name], gift[:bought] ]
       end
     end
-
 
   else
     puts "Error!"
