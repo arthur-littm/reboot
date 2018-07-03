@@ -1,4 +1,4 @@
-Shoes,nil
-Computer,nil
-Surf board,nil
-car,nil
+Shoes,true
+Computer,false
+Surf board,true
+car,true
